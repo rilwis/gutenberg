@@ -12,6 +12,13 @@ import { unlock } from '../lock-unlock';
 export default {
 	name: 'core/post-meta',
 	getValues( { registry, context, bindings } ) {
+		const { getRegisteredPostMeta } = unlock(
+			registry.select( coreDataStore )
+		);
+		const registeredFields = getRegisteredPostMeta(
+			// TODO: Remove this once postType is passed through the context.
+			context?.postType ?? 'post'
+		);
 		const meta = registry
 			.select( coreDataStore )
 			.getEditedEntityRecord(
@@ -23,7 +30,9 @@ export default {
 		for ( const [ attributeName, source ] of Object.entries( bindings ) ) {
 			// Use the key if the value is not set.
 			newValues[ attributeName ] =
-				meta?.[ source.args.key ] || source.args.key;
+				meta?.[ source.args.key ] ??
+				registeredFields?.[ source.args.key ]?.label ??
+				source.args.key;
 		}
 		return newValues;
 	},
@@ -96,12 +105,12 @@ export default {
 			registry.select( coreDataStore )
 		);
 
+		let postType = context?.postType ?? 'post';
+		const isGlobalTemplate = isCustom || slug === 'index';
 		// Inherit the postType from the slug if it is a template.
 		if ( ! context?.postType && type === 'wp_template' ) {
 			// Get the 'kind' from the start of the slug.
 			// Use 'post' as the default.
-			let postType = 'post';
-			const isGlobalTemplate = isCustom || slug === 'index';
 			if ( ! isGlobalTemplate ) {
 				const [ kind ] = slug.split( '-' );
 				if ( kind === 'page' ) {
@@ -120,17 +129,20 @@ export default {
 					postType = match ? match[ 1 ] : 'post';
 				}
 			}
-			const fields = getRegisteredPostMeta( postType );
-
+		}
+		const registeredMetaFields = getRegisteredPostMeta( postType );
+		if ( type === 'wp_template' ) {
 			// Populate the `metaFields` object with the default values.
-			Object.entries( fields || {} ).forEach( ( [ key, props ] ) => {
-				// If the template is global, skip the fields with a subtype.
-				// TODO: Add subtype to schema to be able to filter.
-				if ( isGlobalTemplate && props.subtype ) {
-					return;
+			Object.entries( registeredMetaFields || {} ).forEach(
+				( [ key, props ] ) => {
+					// If the template is global, skip the fields with a subtype.
+					// TODO: Add subtype to schema to be able to filter.
+					if ( isGlobalTemplate && props.subtype ) {
+						return;
+					}
+					metaFields[ key ] = props.default;
 				}
-				metaFields[ key ] = props.default;
-			} );
+			);
 		} else {
 			metaFields = getEditedEntityRecord(
 				'postType',
@@ -143,12 +155,21 @@ export default {
 			return null;
 		}
 
-		// Remove footnotes or private keys from the list of fields.
-		// TODO: Remove this once we retrieve the fields from 'types' endpoint in post or page editor.
 		return Object.fromEntries(
-			Object.entries( metaFields ).filter(
-				( [ key ] ) => key !== 'footnotes' && key.charAt( 0 ) !== '_'
-			)
+			Object.entries( metaFields )
+				// Remove footnotes or private keys from the list of fields.
+				.filter(
+					( [ key ] ) =>
+						key !== 'footnotes' && key.charAt( 0 ) !== '_'
+				)
+				// Return object with label and value.
+				.map( ( [ key, value ] ) => [
+					key,
+					{
+						label: registeredMetaFields?.[ key ]?.label || key,
+						value,
+					},
+				] )
 		);
 	},
 };
