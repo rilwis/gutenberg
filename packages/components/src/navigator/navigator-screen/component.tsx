@@ -52,7 +52,7 @@ function UnconnectedNavigatorScreen(
 		...otherProps
 	} = useContextSystem( props, 'NavigatorScreen' );
 
-	const { location, match, addScreen, removeScreen, setWrapperHeight } =
+	const { location, match, addScreen, removeScreen } =
 		useContext( NavigatorContext );
 	const { isInitial, isBack, focusTargetSelector, skipFocus } = location;
 
@@ -77,7 +77,6 @@ function UnconnectedNavigatorScreen(
 			onAnimationEnd: onAnimationEndProp,
 			skipAnimation: skipAnimationAndFocusRestoration,
 			screenEl: wrapperEl,
-			setWrapperHeight,
 		} );
 
 	const cx = useCx();
