@@ -16,7 +16,7 @@ export default {
 			registry.select( coreDataStore )
 		);
 		const registeredFields = getRegisteredPostMeta(
-			// TODO: Remove this once postType is passed through the context.
+			// TODO: Remove the fallback once postType is passed through the context.
 			context?.postType ?? 'post'
 		);
 		const meta = registry
