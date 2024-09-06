@@ -10,6 +10,10 @@
 
 -   `Composite`: add stable version of the component ([#63569](https://github.com/WordPress/gutenberg/pull/63569)).
 
+### Bug Fixes
+
+-   `DatePicker`: better hover/focus styles ([#65117](https://github.com/WordPress/gutenberg/pull/65117)).
+
 ### Internal
 
 -   `Composite`: Remove from private APIs ([#63569](https://github.com/WordPress/gutenberg/pull/63569)).
