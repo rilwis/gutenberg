@@ -41,35 +41,22 @@ function RootMenu() {
 					<NavigationButtonAsItem
 						icon={ typography }
 						path="/typography"
-						aria-label={ __( 'Typography styles' ) }
 					>
 						{ __( 'Typography' ) }
 					</NavigationButtonAsItem>
 				) }
 				{ hasColorPanel && (
-					<NavigationButtonAsItem
-						icon={ color }
-						path="/colors"
-						aria-label={ __( 'Colors styles' ) }
-					>
+					<NavigationButtonAsItem icon={ color } path="/colors">
 						{ __( 'Colors' ) }
 					</NavigationButtonAsItem>
 				) }
 				{ hasShadowPanel && (
-					<NavigationButtonAsItem
-						icon={ shadowIcon }
-						path="/shadows"
-						aria-label={ __( 'Shadow styles' ) }
-					>
+					<NavigationButtonAsItem icon={ shadowIcon } path="/shadows">
 						{ __( 'Shadows' ) }
 					</NavigationButtonAsItem>
 				) }
 				{ hasLayoutPanel && (
-					<NavigationButtonAsItem
-						icon={ layout }
-						path="/layout"
-						aria-label={ __( 'Layout styles' ) }
-					>
+					<NavigationButtonAsItem icon={ layout } path="/layout">
 						{ __( 'Layout' ) }
 					</NavigationButtonAsItem>
 				) }
