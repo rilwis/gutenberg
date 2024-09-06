@@ -166,7 +166,7 @@ export default {
 				.map( ( [ key, value ] ) => [
 					key,
 					{
-						label: registeredMetaFields?.[ key ]?.label || key,
+						label: registeredMetaFields?.[ key ]?.title || key,
 						value,
 					},
 				] )
