@@ -1669,6 +1669,17 @@ export const setNavigationMode =
 export const __unstableSetEditorMode =
 	( mode ) =>
 	( { dispatch, select } ) => {
+		const currentMode = select.__unstableGetEditorMode();
+
+		if ( currentMode === 'zoom-out' && mode !== 'zoom-out' ) {
+			const { __experimentalSetIsInserterOpened: setIsInserterOpened } =
+				select.getSettings();
+
+			if ( typeof setIsInserterOpened === 'function' ) {
+				setIsInserterOpened( false );
+			}
+		}
+
 		// When switching to zoom-out mode, we need to select the parent section
 		if ( mode === 'zoom-out' ) {
 			const firstSelectedClientId = select.getBlockSelectionStart();
