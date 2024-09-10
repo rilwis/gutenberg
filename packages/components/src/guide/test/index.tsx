@@ -15,6 +15,25 @@ const defaultProps = {
 };
 
 describe( 'Guide', () => {
+	// Mock `matchMedia` so that all animations are skipped,
+	// since js-dom does not support fully CSS animations.
+	const originalMatchMedia = window.matchMedia;
+	const mockedMatchMedia = jest.fn( ( query: string ) => {
+		if ( /prefers-reduced-motion/.test( query ) ) {
+			return { matches: true } as ReturnType< typeof window.matchMedia >;
+		}
+
+		return originalMatchMedia( query );
+	} );
+
+	beforeAll( () => {
+		window.matchMedia = jest.fn( mockedMatchMedia );
+	} );
+
+	afterAll( () => {
+		window.matchMedia = originalMatchMedia;
+	} );
+
 	it( 'renders nothing when there are no pages', () => {
 		render( <Guide { ...defaultProps } pages={ [] } /> );
 		expect( screen.queryByRole( 'dialog' ) ).not.toBeInTheDocument();

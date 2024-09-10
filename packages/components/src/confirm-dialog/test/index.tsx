@@ -11,7 +11,26 @@ import { ConfirmDialog } from '..';
 
 const noop = () => {};
 
-describe( 'Confirm', () => {
+describe( 'Confirm Dialog', () => {
+	// Mock `matchMedia` so that all animations are skipped,
+	// since js-dom does not support fully CSS animations.
+	const originalMatchMedia = window.matchMedia;
+	const mockedMatchMedia = jest.fn( ( query: string ) => {
+		if ( /prefers-reduced-motion/.test( query ) ) {
+			return { matches: true } as ReturnType< typeof window.matchMedia >;
+		}
+
+		return originalMatchMedia( query );
+	} );
+
+	beforeAll( () => {
+		window.matchMedia = jest.fn( mockedMatchMedia );
+	} );
+
+	afterAll( () => {
+		window.matchMedia = originalMatchMedia;
+	} );
+
 	describe( 'Confirm component', () => {
 		describe( 'Structure', () => {
 			it( 'should render correctly', () => {
